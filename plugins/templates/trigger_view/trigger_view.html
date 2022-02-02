@@ -1,0 +1,144 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+{% import 'admin/static.html' as admin_static with context%}
+{% import 'admin/model/layout.html' as model_layout with context %}
+
+{% block head %}
+    {{ super() }}
+    {{ lib.form_css() }}
+    <style>
+        #dag_options .form-group {
+            margin-left: 10px;
+        }
+
+        @keyframes spinner-border {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner-border {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            vertical-align: -0.125em;
+            border: 0.25em solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            -webkit-animation: spinner-border .75s linear infinite;
+            animation: spinner-border .75s linear infinite;
+        }
+
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+            border-width: 0.2em;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}  
+    <div class="row">
+        <div class="col-md-6">
+            {% if messages %}
+                <div class="container">
+                    {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <a href="/admin/">&laquo; Return Home</a>
+            <br>
+            <h2>Manual Trigger</h2>
+            <br>
+            <div class="widget-content">
+                <form id="triggerForm" method="post">
+                    {% if csrf_token %}
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    {% endif %}
+                    <div class="form-group">
+                        <label for="dag">Select a dag:</label>
+                        <select name="dag" id="selected_dag" class="form-control">
+                            <option value=""></option>
+                            {%- for dag_id, dag_arguments in dag_data.items() %}
+                                <option value="{{ dag_id }}" {% if dag_id == default_dag %}selected="selected"{% endif %}>{{ dag_id }}</option>
+                            {%- endfor %}
+                        </select>
+                    </div>
+                    <div id="dag_options">
+                        {%- for dag_id, dag_arguments in dag_data.items() %}
+                            <div id="{{ dag_id }}" {% if dag_id != default_dag %}style='display:none'{% endif %}>
+                                {% if dag_arguments %}
+                                    <p><b>Arguments to trigger dag {{ dag_id }}:</b></p><br>
+                                {% endif %}
+                                {% for dag_argument_name, arg in dag_arguments.items() %}
+                                    <div class="form-group">
+                                        <label for="{{ dag_argument_name }}">{{ arg.display_name }}</label>
+                                        {% if arg.arg_type == 'enum' %}
+                                            <select name="{{ dag_id }}-{{ dag_argument_name }}" class="form-control" aria-describedBy="{{ dag_id }}-{{ dag_argument_name }}-help-block" {% if arg.required %}data-required="true"{% endif %}>
+                                                <option value=""></option>
+                                                {% for item in choices[dag_argument_name] %}
+                                                    <option value="{{ item }}">{{ item }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        {% else %}
+                                            <input type="text" id="{{ dag_argument_name }}" name="{{ dag_id }}-{{ dag_argument_name }}" placeholder="{{ dag_argument_name }}" class="form-control" aria-describedBy="{{ dag_id }}-{{ dag_argument_name }}-help-block" {% if arg.required %}data-required="true"{% endif %}>
+                                        {% endif %}
+                                        <small id="{{ dag_id }}-{{ dag_argument_name }}-help-block">{{ arg.help_text }}</small>
+                                    </div>
+                                    <br>
+                                {% endfor %}
+                            </div>
+                        {%- endfor %}
+                    </div>
+                    <br>
+                    <button type="submit" id="trigger-form-btn" class="btn btn-primary">Trigger</button>&nbsp;&nbsp;<a href="/admin/" class="btn btn-default">Cancel</a>
+                </form>
+            </div><!-- /.widget-content -->
+        </div><!-- /.col-md-6 -->
+    </div><!-- /.row -->
+    <br>
+{% endblock %}
+
+{% block tail %}
+    {{ super() }}
+    <script src="{{ admin_static.url(filename='admin/js/filters.js') }}"></script>
+    {{ lib.form_js() }}
+    <script type="text/javascript">   
+        var $previous;  
+        function cycle_dag_options() {
+            var new_dag_id = $("#selected_dag").val();
+            if ($previous) {
+                $previous.css({"display": "none"});
+                $previous.find(":input").prop("required", false);
+            }
+            if (new_dag_id) {
+                $("#trigger-form-btn").removeClass("disabled");
+                var $dagOptions = $(`#${new_dag_id}`);
+                $dagOptions.find(":input").each(function() {
+                    if ($(this).data("required")) {
+                        $(this).prop("required", true)
+                    }
+                });
+                $dagOptions.css({"display": "block"});
+                $previous = $dagOptions;
+            } else {
+                $("#trigger-form-btn").addClass("disabled");
+            }
+        }
+        cycle_dag_options();
+        $("#selected_dag").on("change", cycle_dag_options);
+
+        $('#triggerForm').submit(function(e) {
+            var $submit_btn = $(this).find('button[type=submit]');
+            $submit_btn
+                .attr('disabled', 'disabled')
+                .append(`
+                    &nbsp;<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                `);
+        });
+    </script>
+{% endblock %}

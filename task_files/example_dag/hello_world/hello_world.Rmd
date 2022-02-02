@@ -1,0 +1,12 @@
+---
+title: "Hello World!"
+output: pdf_document
+---
+
+This is an RMarkdown file!
+
+```{r}
+i <- "hello world!"
+```
+
+Output: `r i`

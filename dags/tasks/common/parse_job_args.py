@@ -21,15 +21,15 @@ def parse_job_args_fn(**kwargs):
     instantiator = _get_conf_or_default(dag_run_conf, 'instantiator', t_args)
     kwargs["ti"].xcom_push(key="instantiator", value=instantiator)
     dag_run_conf.pop('instantiator')
-    cf_run_id = dag_run_conf.pop('cf_run_id', None)
-    if cf_run_id is None:
+    custom_run_id = dag_run_conf.pop('custom_run_id', None)
+    if custom_run_id is None:
         trigger_type = 'manual'
         pac_dt = pendulum\
             .utcnow()\
             .astimezone('America/Los_Angeles')\
             .strftime("%Y-%m-%dT%H:%M:%S.%f%z")
-        cf_run_id = f"{trigger_type}__{instantiator}_{pac_dt}"
-    kwargs["ti"].xcom_push(key="cf_run_id", value=cf_run_id)
+        custom_run_id = f"{trigger_type}__{instantiator}_{pac_dt}"
+    kwargs["ti"].xcom_push(key="custom_run_id", value=custom_run_id)
     for k in dag_run_conf:
         arg_val = _get_conf_or_default(dag_run_conf, k, t_args)
         kwargs["ti"].xcom_push(key=k, value=arg_val)

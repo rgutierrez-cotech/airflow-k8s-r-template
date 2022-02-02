@@ -76,5 +76,5 @@ def verify_env_vars(ev):
         if _check_k(k, ev):
             raise TaskVariableException(k)
     ev['TASK_FOLDER'] = f"{ev['CLOUD_STORAGE_BUCKET']}/task_files/{ev['DAG_ID']}/{ev['TASK_ID']}"
-    ev['TASK_RESULTS_FOLDER'] = f"{ev['CLOUD_STORAGE_BUCKET']}/runs/{ev['DAG_ID']}/{ev['CF_RUN_ID']}/{ev['TASK_ID']}"
+    ev['TASK_RESULTS_FOLDER'] = f"{ev['CLOUD_STORAGE_BUCKET']}/runs/{ev['DAG_ID']}/{ev['CUSTOM_RUN_ID']}/{ev['TASK_ID']}"
     return ev

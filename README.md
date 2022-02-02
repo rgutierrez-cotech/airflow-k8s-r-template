@@ -1,6 +1,6 @@
-# Carnegie Foundation Data Processing Project
+# Template project for Airflow/Cloud Composer, Kubernetes, and R
 
-This project contains config files, artifacts, and scripts for use within the data processing pipeline orchestrated with Apache Airflow/Cloud Composer.
+This project contains config files, artifacts, and scripts for use within a data processing pipeline orchestrated with Apache Airflow/Cloud Composer.
 
 ## Overview
 

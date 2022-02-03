@@ -6,7 +6,6 @@ from airflow.models import DagBag, Variable
 from flask import request, Markup, Blueprint
 from flask_admin import BaseView, expose
 from flask_admin.base import MenuLink
-from flask_appbuilder import BaseView as AppBuilderBaseView, expose as ab_expose
 from airflow.utils import timezone
 import pendulum
 

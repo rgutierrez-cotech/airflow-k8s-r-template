@@ -9,7 +9,11 @@ from .secrets import secret_svc_acct
 DEFAULT_ENV_VARS = {
     'INSTANTIATOR': '{{ task_instance.xcom_pull(key="instantiator") }}',
     'RUN_ID': '{{ run_id }}',
+    # add these three variables
+    'SURVEY_ADMINISTRATION_NAME': '{{ task_instance.xcom_pull(key="survey_administration_name") }}',
+    'NETWORK_ID': '{{ task_instance.xcom_pull(key="network_id") }}',
     'CUSTOM_RUN_ID': '{{ task_instance.xcom_pull(key="custom_run_id") }}',
+    #
     'DAG_ID': '',
     'TASK_ID': '',
     'CREDENTIALS_FILE': '/var/secrets/google/client_secrets_svc_google.json',

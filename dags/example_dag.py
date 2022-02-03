@@ -30,6 +30,18 @@ dag.trigger_arguments = {
         'default_value': 'airflow',
         'help_text': "Denotes who is triggering this DAG run. The results of the run will have this user's name included in the folder name (e.g. 'manual__smith_2022-01-01T00:00:00.00000-0700')."
     },
+    'survey_administration_name': {
+        'display_name': 'Survey Administration name',
+        'arg_type': 'text',
+        'required': True,
+        'help_text': "Unique name of the Survey Administration that holds the data we want to process."
+    },
+    'network_id': {
+        'display_name': 'Network ID',
+        'arg_type': 'text',
+        'required': True,
+        'help_text': 'Unique numeric ID for the network whose data we want to process.'
+    }
 }
 
 
